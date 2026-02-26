@@ -1,99 +1,137 @@
 'use client';
 
-import { redirect, useRouter } from 'next/navigation';
-import React, { useState } from 'react'
-import { useAuthStore } from '../store';
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
 import Image from 'next/image';
+import { useAuthStore } from '../store';
+import Button from '@/components/ui/Button';
+import { useToastStore } from '@/app/toast-store';
 
-const Login = () => {
+export default function Login() {
+  const [userEmail, setUserEmail] = useState('');
+  const [userPassword, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const router = useRouter();
+  const setAuth = useAuthStore((state) => state.setAuth);
+  const toast = useToastStore((s) => s.add);
 
-    const [userEmail, setUserEmail] = useState('');
-    const [userPassword, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-
-    const router = useRouter();
-
-    const setAuth = useAuthStore((state) => state.setAuth);
-
-
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        try {
-            setLoading(true);
-            const response = await fetch('https://3j20j2tc-5000.uks1.devtunnels.ms/api/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: userEmail,
-                    password: userPassword
-                })
-            })
-
-            const res  = await response.json();
-            console.log('login result: ', res);
-
-            if(res.message) {
-                setLoading(false);
-                setError(res.message);
-                return
-            }
-            setAuth(res.user);
-            setLoading(false);
-            router.push('/dashboard');
-            return;
-        } catch (error) {
-            alert(error)
-            setLoading(false);
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    try {
+      const response = await fetch(
+        'https://3j20j2tc-5000.uks1.devtunnels.ms/api/auth/login',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: userEmail, password: userPassword }),
         }
-        
-    }
+      );
+      const res = await response.json();
 
+      if (res.message) {
+        setError(res.message);
+        setLoading(false);
+        return;
+      }
+      setAuth(res.user);
+      toast('success', `Welcome back, ${res.user?.name ?? 'team'}!`);
+      router.push('/dashboard');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Something went wrong';
+      setError(msg);
+      toast('error', msg);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="grid grid-cols-2 min-h-screen  text-black font-sans">
-        <form onSubmit={handleSubmit} className='h-screen px-10 flex flex-col gap-5 my-auto'>
-            <div className='my-auto grid gap-5 px-5'>
-                <h3 className='text-[#A71A15] font-bold text-4xl'>SyncSpace</h3>
-                <h3 className='text-4xl font-semibold'>Welcome back, team!</h3>
-                <div className='grid gap-5'>
-                    <input 
-                        type='email'
-                        required
-                        placeholder='Enter your email'
-                        className='border border-[#A71A15] rounded-full px-4 py-2'
-                        onChange={(e) => setUserEmail(e.target.value)}
-                    />
-                    <input 
-                        type='password'
-                        required
-                        placeholder='Enter your password'
-                        className='border border-[#A71A15] rounded-full px-4 py-2'
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                </div>
-                {error && <p className='text-red-500 text-sm text-center'>{error}</p>}
-                <button 
-                    type='submit'
-                    className='bg-[#A71A15] text-white text-lg w-full py-2 font-semibold rounded-full cursor-pointer'
-                >{loading ? 'loading...' : 'Login'}</button>
-                <h3 className='text-sm'>Dont have an account? <span className='text-red-500'>Register here</span></h3>
+    <div className="grid min-h-screen grid-cols-1 text-[var(--foreground)] md:grid-cols-2">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col justify-center px-6 py-12 sm:px-10 lg:px-12"
+      >
+        <div className="mx-auto w-full max-w-sm space-y-8">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-[var(--primary)]">
+              SyncSpace
+            </h1>
+            <h2 className="mt-4 text-2xl font-semibold text-[var(--foreground)]">
+              Welcome back
+            </h2>
+            <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+              Sign in to continue to your workspaces.
+            </p>
+          </div>
+
+          <div className="space-y-5">
+            <div>
+              <label htmlFor="email" className="sr-only">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                required
+                placeholder="Email"
+                value={userEmail}
+                onChange={(e) => setUserEmail(e.target.value)}
+                className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:border-[var(--primary)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
+              />
             </div>
-        </form>
-        <div className="relative w-full">
-            <Image
-                src='/image1.jpg'
-                alt='red theme office'
-                fill
-                objectFit='cover'
-                className="relative"
-            />
+            <div>
+              <label htmlFor="password" className="sr-only">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                required
+                placeholder="Password"
+                value={userPassword}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:border-[var(--primary)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
+              />
+            </div>
+            {error && (
+              <div
+                className="rounded-lg border border-[var(--error)]/30 bg-[var(--error-muted)] px-4 py-3 text-sm text-[var(--error)]"
+                role="alert"
+              >
+                {error}
+              </div>
+            )}
+            <Button
+              type="submit"
+              variant="primary"
+              size="lg"
+              fullWidth
+              loading={loading}
+            >
+              Sign in
+            </Button>
+          </div>
+
+          <p className="text-center text-sm text-[var(--muted-foreground)]">
+            Don’t have an account?{' '}
+            <span className="font-medium text-[var(--primary)]">Contact your admin</span>
+          </p>
         </div>
+      </form>
 
+      <div className="relative hidden md:block">
+        <Image
+          src="/image1.jpg"
+          alt="Team collaboration"
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-[var(--foreground)]/20" />
+      </div>
     </div>
-  )
+  );
 }
-
-export default Login

@@ -1,33 +1,31 @@
 'use client';
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuthStore, useWorkspaceStore } from '../store';
-import { Workspace } from '@/types/types';
+import { useAuthStore } from '../store';
 import Workspaces from '@/components/Workspaces';
 
+export default function Dashboard() {
+  const router = useRouter();
+  const user = useAuthStore((state) => state.user);
 
-const Dashboard = () => {
-    const router = useRouter();
-    const user = useAuthStore((state) => state.user);
+  useEffect(() => {
+    if (!user) router.push("/");
+  }, [user, router]);
 
-    console.log('user data in dashboard: ', user)
-
-    useEffect(() => {
-        if (!user) {
-            router.push("/");
-        }
-    }, [user, router]);
-
-    if (!user) return null;
+  if (!user) return null;
 
   return (
-    <div className='p-5'>
-        <h3 className='text-2xl font-semibold'>Welcome back, {user.name}</h3>
-         <Workspaces />
-        
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight text-[var(--foreground)] sm:text-3xl">
+          Welcome back, {user.name}
+        </h1>
+        <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+          Pick a workspace to start collaborating in real time.
+        </p>
+      </div>
+      <Workspaces />
     </div>
-  )
+  );
 }
-
-export default Dashboard

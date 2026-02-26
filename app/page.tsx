@@ -1,23 +1,76 @@
-import Link from "next/link";
-import Image from "next/image";
+import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Home() {
   return (
-    <div className="min-h-screen  bg-zinc-50 text-black font-sans">
-        <Image
-          src='/image1.jpg'
-          alt='red theme office'
-          fill
-          objectFit='cover'
-        />
-        <div className="px-5 py-5 border-b-2 border-gray-100 shadow absolute w-full h-full bg-black/20">
-          <div className="text-center h-full flex flex-col my-auto space-y-5 md:w-1/2 mx-auto pt-16">
-            <h3 className="text-5xl font-semibold text-white">SyncSpace</h3>
-            <p className="text-white text-sm">A cloud-based software platform accessed through a browser that enables multiple users to work together in real-time on shared tasks, documents, or projects, regardless of their physical location. </p>
-            <Link href='/login' className="bg-red-500 text-white px-10 py-3 rounded-md font-semibold">Get Started</Link>
+    <div className="relative min-h-screen bg-[var(--background)]">
+      <Image
+        src="/image1.jpg"
+        alt=""
+        fill
+        className="object-cover"
+        priority
+      />
+      <div className="absolute inset-0 bg-[var(--foreground)]/40" />
+      <div className="relative flex min-h-screen flex-col">
+        <header className="flex items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+          <span className="text-xl font-semibold text-white">SyncSpace</span>
+          <Link
+            href="/login"
+            className="rounded-lg bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition hover:bg-white/20"
+          >
+            Sign in
+          </Link>
+        </header>
+        <main className="mx-auto flex flex-1 flex-col items-center justify-center px-4 text-center sm:px-6">
+          <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            Real-time collaboration,
+            <br />
+            in the browser
+          </h1>
+          <p className="mt-6 max-w-xl text-lg text-white/90">
+            A cloud-based platform that lets your team work together on shared tasks and
+            projects in real time—from anywhere.
+          </p>
+          <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:gap-6">
+            <Link
+              href="/login"
+              className="inline-flex items-center justify-center rounded-lg bg-[var(--primary)] px-6 py-3 text-base font-semibold text-white shadow-lg transition hover:opacity-95"
+            >
+              Get started
+            </Link>
+            <span className="text-sm text-white/70">
+              No signup—use your team account to sign in.
+            </span>
           </div>
-          
-        </div>
+          <ul className="mt-16 grid grid-cols-1 gap-6 text-left sm:grid-cols-3 sm:gap-8">
+            <li className="rounded-lg bg-white/5 p-4 backdrop-blur-sm">
+              <span className="text-sm font-semibold uppercase tracking-wider text-white/80">
+                Live presence
+              </span>
+              <p className="mt-1 text-sm text-white/90">
+                See who’s online and when messages were last edited.
+              </p>
+            </li>
+            <li className="rounded-lg bg-white/5 p-4 backdrop-blur-sm">
+              <span className="text-sm font-semibold uppercase tracking-wider text-white/80">
+                Channels
+              </span>
+              <p className="mt-1 text-sm text-white/90">
+                Organize work by workspace and channel.
+              </p>
+            </li>
+            <li className="rounded-lg bg-white/5 p-4 backdrop-blur-sm">
+              <span className="text-sm font-semibold uppercase tracking-wider text-white/80">
+                Enterprise-ready
+              </span>
+              <p className="mt-1 text-sm text-white/90">
+                Built for teams that need clarity and control.
+              </p>
+            </li>
+          </ul>
+        </main>
+      </div>
     </div>
   );
 }

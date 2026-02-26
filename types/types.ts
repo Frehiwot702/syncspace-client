@@ -23,11 +23,12 @@ export interface Channel {
 }
 
 export interface Message {
+  _id: string;
+  channel: string;
+  sender: {
     _id: string;
-    channel: string;
-    sender: {
-        _id: string;
-        name: string;
-    },
-    content: string;
+    name: string;
+  };
+  content: string;
+  createdAt?: string; // ISO date from API
 }
