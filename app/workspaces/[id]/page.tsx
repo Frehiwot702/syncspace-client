@@ -11,43 +11,84 @@ const socket = io("https://3j20j2tc-5000.uks1.devtunnels.ms")
 
 const Workspace = () => {
 
+    const params = useParams();
     const user = useAuthStore((state) => state.user);
     const [channels, setChannels] = useState<Channel[]>([]);
     const [messages, setMessages] = useState<Message[]>([]);
+    const [error, setError] = useState('');
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
+
     const [typingUser, setTypingUser] = useState('');
+
+
+    // const workspace = useWorkspaceStore((state) => state.workspace);
+    // console.log('workspace: ', workspace)
+
+    // console.log('param id: ', params)
+
     const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
 
 
-    // live user status update
-    useEffect(() => {
-        if(!selectedChannel) return;
-        
-        socket.on("status_update", ({ userId, status }) => {
-            setSelectedChannel((prev) => {
-                if (!prev) return prev;
-                return {
-                    ...prev,
-                    workspace: {
-                        ...prev.workspace,
-                        members: prev.workspace.members.map((member) =>
-                            member._id === userId
-                                ? { ...member, status }
-                                : member
-                        )
+
+   useEffect(() => {
+        const fetchChannels = async () => {
+            try {
+                const result = await fetch(`https://3j20j2tc-5000.uks1.devtunnels.ms/api/channels/${params.id}`,
+                    {   method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
                     }
-            };
-        });
-        return () => {
-            socket.off("user_typing");
-        };
-        })
+                )
+                const res = await result.json();
+                console.log('fetch channels result: ', res)
+
+                if(res.message) {
+                    setError(res.message);
+                }
+                setChannels(res);
+                // if(res.length > 0 ) {setSelectedChannel(res[0])}
+
+                return;
+            } catch(err: any) {
+                setError(err)
+            }
+            
+        }
     
-    }, [selectedChannel]);
+        if (user) {
+            fetchChannels();
+        }
+    }, [user, params.id]);
 
 
-    // live message update
+    // useEffect(() => {
+    //     socket.on("status_update", ({ userId, status }) => {
+    //         setSelectedChannel(prev => {
+    //             if (!prev?.workspace?.members) return prev;
+
+    //             return {
+    //                 ...prev,
+    //                 workspace: {
+    //                     ...prev.workspace,
+    //                     members: prev.workspace.members.map(member =>
+    //                         member._id === userId
+    //                             ? { ...member, status }
+    //                             : member
+    //                     )
+    //                 }
+    //             };
+    //         });
+    //     });
+
+    //     return () => {
+    //         socket.off("status_update");
+    //     };
+    // }, [])
+
+
+
     useEffect(() => {
         socket.on("receive_message", (newM) => {
             setMessages((prev) => [...prev, newM]);
@@ -62,8 +103,6 @@ const Workspace = () => {
         };
     }, []);
 
-
-    // live user typing status
     useEffect(() => {
         socket.on("user_typing", (name) => {
 
@@ -79,7 +118,7 @@ const Workspace = () => {
         return () => {
             socket.off("user_typing");
         };
-    });
+    }, [typingUser, user?.name])
     
 
     const handleChannelChange = async (c: Channel) => {
@@ -97,10 +136,16 @@ const Workspace = () => {
                 }
             )
             const res = await result.json();
+            console.log('fetch message result: ', res)
+
+            if(res.message) {
+                setError(res.message);
+                return;
+            }
             setMessages(res);
             return;
-        } catch(error) {
-            alert(error)
+        } catch(err: any) {
+            setError(err)
         }
     }
 
@@ -124,15 +169,15 @@ const Workspace = () => {
             await handleChannelChange(selectedChannel!);
 
             return;
-        } catch(error) {
-            alert(error);
+        } catch(err: any) {
+            setError(err);
             setLoading(false);
         }
     }
 
   return (
     <div>
-        <div className='flex py-10 px-5 mt-10 space-x-10'>
+        <div className='flex py-10 px-5 space-x-10'>
             <div className='w-92 h-full'>
                 <h3 className='text-xl font-semibold'>Groups</h3>
                 <div className='space-y-3 py-3'>
@@ -224,7 +269,6 @@ const Workspace = () => {
                         </div>
                         <div className='grid gap-3 py-3 overflow-y-hidden'>
                             {selectedChannel?.workspace.members?.map((m) => (
-
                                 <div key={m._id} className='w-full flex items-start justify-between'>
                                     <div>
                                         <h3>{m.name}</h3>
