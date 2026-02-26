@@ -1,18 +1,13 @@
+import React from 'react';
 import Navbar from '@/components/Navbar';
-import React from 'react'
 
-const layout = ({
+export default function WorkspaceLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) => {
-  
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className='min-h-screen'>
-        <Navbar />
-        {children}
+    <div className="min-h-screen bg-[var(--background)]">
+      <Navbar />
+      <main className="h-[calc(100vh-3.5rem)]">{children}</main>
     </div>
-  )
+  );
 }
-
-export default layout

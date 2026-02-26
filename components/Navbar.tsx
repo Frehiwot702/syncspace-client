@@ -1,26 +1,51 @@
-'use client'
-import { useAuthStore } from '@/app/store';
-import React from 'react'
+'use client';
 
-const Navbar = () => {
+import { useAuthStore } from '@/app/store';
+import React from 'react';
+import Link from 'next/link';
+import Button from '@/components/ui/Button';
+import { useRouter } from 'next/navigation';
+
+export default function Navbar() {
   const user = useAuthStore((state) => state.user);
-  const logout = useAuthStore((state) => state.logout)
+  const logout = useAuthStore((state) => state.logout);
+
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    if(!user) return;
+
+    await fetch('https://3j20j2tc-5000.uks1.devtunnels.ms/api/auth/logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user?._id}),
+    });
+    logout();
+    router.push('/login');
+  }
 
   return (
-    
-    <div className='bg-white'>
-        <div className='w-full border-b-2 fixed top-0 z-50 border-gray-200 bg-white px-8 py-5 shadow flex justify-between items-center'>
-           <h3 className='text-[#A71A15] font-bold text-2xl'>SyncSpace</h3>
-           <div className='flex items-center space-x-5'>
-                <div className='text-end'>
-                    <h3 className='text-black'>{user?.name}</h3>
-                    <h3 className='text-black/50 text-sm'>{user?.email}</h3>
-                </div>
-              <button onClick={logout} className='bg-[#A71A15] text-white px-4 py-2 rounded-full font-semibold'>Logout</button>
-           </div>
+    <header className="sticky top-0 z-50 w-full border-b border-[var(--border)] bg-[var(--surface)]">
+      <div className="mx-auto flex h-14 max-w-[1600px] items-center justify-between px-4 sm:px-6 lg:px-8">
+        <Link
+          href="/dashboard"
+          className="text-xl font-semibold text-[var(--primary)] transition-opacity hover:opacity-90"
+        >
+          SyncSpace
+        </Link>
+        <div className="flex items-center gap-4 sm:gap-6">
+          <div className="text-right">
+            <p className="text-sm font-medium text-[var(--foreground)]">{user?.name}</p>
+            <p className="text-xs text-[var(--muted-foreground)]">{user?.email}</p>
+          </div>
+          <Button 
+            variant="primary" 
+            size="sm" 
+            onClick={handleLogout}>
+            Logout
+          </Button>
         </div>
-    r</div>
-  )
+      </div>
+    </header>
+  );
 }
-
-export default Navbar
