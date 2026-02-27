@@ -30,5 +30,5 @@ export interface Message {
     name: string;
   };
   content: string;
-  createdAt?: string; // ISO date from API
+  createdAt?: string; 
 }

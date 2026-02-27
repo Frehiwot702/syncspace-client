@@ -4,10 +4,25 @@ import { useAuthStore } from '@/app/store';
 import React from 'react';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
+import { useRouter } from 'next/navigation';
 
 export default function Navbar() {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
+
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    if(!user) return;
+
+    await fetch('https://3j20j2tc-5000.uks1.devtunnels.ms/auth/logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user?._id}),
+    });
+    logout();
+    router.push('/login');
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-[var(--border)] bg-[var(--surface)]">
@@ -23,7 +38,10 @@ export default function Navbar() {
             <p className="text-sm font-medium text-[var(--foreground)]">{user?.name}</p>
             <p className="text-xs text-[var(--muted-foreground)]">{user?.email}</p>
           </div>
-          <Button variant="primary" size="sm" onClick={logout}>
+          <Button 
+            variant="primary" 
+            size="sm" 
+            onClick={handleLogout}>
             Logout
           </Button>
         </div>

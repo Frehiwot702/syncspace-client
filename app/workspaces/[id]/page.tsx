@@ -101,7 +101,7 @@ export default function WorkspacePage() {
       setTypingUser('');
     });
     return () => { socket.off('receive_message'); };
-  }, []);
+  }, [messages]);
 
   useEffect(() => {
     const handler = (name: string) => {
@@ -116,13 +116,13 @@ export default function WorkspacePage() {
   const handleChannelChange = useCallback(async (c: Channel) => {
     setSelectedChannel(c);
     setMessages([]);
+    setMessage('');
     setMessagesLoading(true);
     setError(null);
     socket.emit('join_channel', c._id);
 
     try {
-      const result = await fetch(
-        `https://3j20j2tc-5000.uks1.devtunnels.ms/api/messages/${c._id}`,
+      const result = await fetch(`https://3j20j2tc-5000.uks1.devtunnels.ms/api/messages/${c._id}`,
         { method: 'GET', headers: { 'Content-Type': 'application/json' } }
       );
       const res = await result.json();
@@ -142,7 +142,7 @@ export default function WorkspacePage() {
 
   const handleSendMessage = async () => {
     if (!selectedChannel || !message.trim()) return;
-    setSendLoading(true);
+    // setSendLoading(true);
     setError(null);
     try {
       await fetch('https://3j20j2tc-5000.uks1.devtunnels.ms/api/messages/send', {
@@ -155,12 +155,10 @@ export default function WorkspacePage() {
         }),
       });
       setMessage('');
-      await handleChannelChange(selectedChannel);
+      await handleChannelChange(selectedChannel!);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to send');
-    } finally {
-      setSendLoading(false);
-    }
+    } 
   };
 
   const memberCount = selectedChannel?.workspace?.members?.length ?? 0;
@@ -225,16 +223,8 @@ export default function WorkspacePage() {
                   {error}
                 </div>
               )}
-
-              {messagesLoading ? (
-                <div className="flex flex-1 items-center justify-center">
-                  <div className="flex flex-col gap-4">
-                    <Skeleton className="h-12 w-64 rounded-2xl" />
-                    <Skeleton className="h-12 w-48 rounded-2xl ml-14" />
-                    <Skeleton className="h-12 w-56 rounded-2xl" />
-                  </div>
-                </div>
-              ) : messages.length === 0 ? (
+{
+              messages.length === 0 ? (
                 <EmptyState
                   title="No messages yet"
                   description="Send a message to start the conversation."

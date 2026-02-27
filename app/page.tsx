@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen bg-[var(--background)]">
+    <div className="relative min-h-screen">
       <Image
         src="/image1.jpg"
         alt=""
@@ -11,7 +11,7 @@ export default function Home() {
         className="object-cover"
         priority
       />
-      <div className="absolute inset-0 bg-[var(--foreground)]/40" />
+      <div className="absolute inset-0 bg-black/40" />
       <div className="relative flex min-h-screen flex-col">
         <header className="flex items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <span className="text-xl font-semibold text-white">SyncSpace</span>
