@@ -38,7 +38,6 @@ export default function WorkspacePage() {
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch channels for this workspace
   useEffect(() => {
     if (!user || !params?.id) return;
 
@@ -74,7 +73,6 @@ export default function WorkspacePage() {
     return () => { cancelled = true; };
   }, [user, params?.id]);
 
-  // Live status updates for members
   useEffect(() => {
     if (!selectedChannel) return;
     const handler = ({ userId, status }: { userId: string; status: 'online' | 'offline' }) => {
@@ -119,7 +117,7 @@ export default function WorkspacePage() {
     setMessage('');
     setMessagesLoading(true);
     setError(null);
-    socket.emit('join_channel', c._id);
+    socket.emit('join_channel', {channelId: c._id, userId: user?._id});
 
     try {
       const result = await fetch(`https://3j20j2tc-5000.uks1.devtunnels.ms/api/messages/${c._id}`,
@@ -164,7 +162,7 @@ export default function WorkspacePage() {
   const memberCount = selectedChannel?.workspace?.members?.length ?? 0;
 
   return (
-    <div className="flex h-full overflow-hidden">
+    <div className="grid md:flex h-full">
       {/* Channel list */}
       <aside className="flex w-72 shrink-0 flex-col border-r border-border bg-surface p-4">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
@@ -312,7 +310,7 @@ export default function WorkspacePage() {
       </section>
 
       {/* Members panel */}
-      <aside className="hidden w-64 shrink-0 border-l border-border bg-surface lg:flex lg:flex-col">
+      <aside className="w-64 shrink-0 border-l border-border bg-surface flex flex-col">
         {selectedChannel && (
           <div className="flex flex-col overflow-hidden p-4">
             <div className="text-center">

@@ -59,11 +59,11 @@ export default function Workspaces() {
     return () => { cancelled = true; };
   }, [user, toast, setWorkspaces]);
 
-  useEffect(() => {
-    socket.connect();
-    socket.on('connect', () => {});
-    return () => socket.disconnect();
-  }, []);
+  // useEffect(() => {
+  //   socket.connect();
+  //   socket.on('connect', () => {});
+  //   return () => socket.disconnect();
+  // }, []);
 
   if (loading) {
     return (

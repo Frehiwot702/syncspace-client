@@ -15,7 +15,7 @@ export default function Navbar() {
   const handleLogout = async () => {
     if(!user) return;
 
-    await fetch('https://3j20j2tc-5000.uks1.devtunnels.ms/auth/logout', {
+    await fetch('https://3j20j2tc-5000.uks1.devtunnels.ms/api/auth/logout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user?._id}),
