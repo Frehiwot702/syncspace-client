@@ -95,6 +95,7 @@ export default function WorkspacePage() {
 
   useEffect(() => {
     socket.on('receive_message', (newM: Message) => {
+      console.log('message recieved : ', newM);
       setMessages((prev) => [...prev, newM]);
       setTypingUser('');
     });
@@ -105,11 +106,14 @@ export default function WorkspacePage() {
     const handler = (name: string) => {
       if (name === user?.name) return;
       setTypingUser(name);
+      console.log('username:', name);
       setTimeout(() => setTypingUser(''), 2000);
     };
     socket.on('user_typing', handler);
     return () => { socket.off('user_typing', handler); };
-  }, [user?.name]);
+  }, [typingUser, user?.name ]);
+
+  console.log("typing",typingUser);
 
   const handleChannelChange = useCallback(async (c: Channel) => {
     setSelectedChannel(c);
@@ -117,7 +121,7 @@ export default function WorkspacePage() {
     setMessage('');
     setMessagesLoading(true);
     setError(null);
-    socket.emit('join_channel', {channelId: c._id, userId: user?._id});
+    socket.emit('join_channel', c._id );
 
     try {
       const result = await fetch(`https://syncspace-server-jfmb.onrender.com/api/messages/${c._id}`,
@@ -128,7 +132,7 @@ export default function WorkspacePage() {
         setError(res.message);
         setMessages([]);
       } else {
-        setMessages(Array.isArray(res) ? res : []);
+        setMessages(res);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load messages');
@@ -153,7 +157,7 @@ export default function WorkspacePage() {
         }),
       });
       setMessage('');
-      await handleChannelChange(selectedChannel!);
+      // await handleChannelChange(selectedChannel!);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to send');
     } 
@@ -164,7 +168,7 @@ export default function WorkspacePage() {
   return (
     <div className="grid md:flex h-full">
       {/* Channel list */}
-      <aside className="flex w-72 shrink-0 flex-col border-r border-border bg-surface p-4">
+      <aside className="flex w-full md:w-72 shrink-0 flex-col border-r border-border bg-surface p-4">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
           Channels
         </h2>
@@ -274,6 +278,7 @@ export default function WorkspacePage() {
                   onChange={(e) => {
                     setMessage(e.target.value);
                     if (selectedChannel && user?.name) {
+                      console.log('user typing')
                       socket.emit('typing', {
                         channelId: selectedChannel._id,
                         userName: user.name,
@@ -310,7 +315,7 @@ export default function WorkspacePage() {
       </section>
 
       {/* Members panel */}
-      <aside className="w-64 shrink-0 border-l border-border bg-surface flex flex-col">
+      <aside className="w-full md:w-64 shrink-0 border-l border-border bg-surface flex flex-col">
         {selectedChannel && (
           <div className="flex flex-col overflow-hidden p-4">
             <div className="text-center">
