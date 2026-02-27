@@ -9,7 +9,7 @@ import Button from '@/components/ui/Button';
 import EmptyState from '@/components/ui/EmptyState';
 import Skeleton from '@/components/ui/Skeleton';
 
-const socket = io('https://3j20j2tc-5000.uks1.devtunnels.ms');
+const socket = io('https://syncspace-server-jfmb.onrender.com');
 
 function formatMessageTime(iso?: string): string {
   if (!iso) return 'Just now';
@@ -48,7 +48,7 @@ export default function WorkspacePage() {
     const fetchChannels = async () => {
       try {
         const result = await fetch(
-          `https://3j20j2tc-5000.uks1.devtunnels.ms/api/channels/${params.id}`,
+          `https://syncspace-server-jfmb.onrender.com/api/channels/${params.id}`,
           { method: 'GET', headers: { 'Content-Type': 'application/json' } }
         );
         const res = await result.json();
@@ -120,7 +120,7 @@ export default function WorkspacePage() {
     socket.emit('join_channel', {channelId: c._id, userId: user?._id});
 
     try {
-      const result = await fetch(`https://3j20j2tc-5000.uks1.devtunnels.ms/api/messages/${c._id}`,
+      const result = await fetch(`https://syncspace-server-jfmb.onrender.com/api/messages/${c._id}`,
         { method: 'GET', headers: { 'Content-Type': 'application/json' } }
       );
       const res = await result.json();
@@ -143,7 +143,7 @@ export default function WorkspacePage() {
     // setSendLoading(true);
     setError(null);
     try {
-      await fetch('https://3j20j2tc-5000.uks1.devtunnels.ms/api/messages/send', {
+      await fetch('https://syncspace-server-jfmb.onrender.com/api/messages/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

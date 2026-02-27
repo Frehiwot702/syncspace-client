@@ -22,7 +22,7 @@ export default function Login() {
     setLoading(true);
     try {
       const response = await fetch(
-        'https://3j20j2tc-5000.uks1.devtunnels.ms/api/auth/login',
+        'https://syncspace-server-jfmb.onrender.com/api/auth/login',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

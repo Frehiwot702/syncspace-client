@@ -27,7 +27,7 @@ export default function Workspaces() {
     const fetchWorkspaces = async () => {
       try {
         const result = await fetch(
-          `https://3j20j2tc-5000.uks1.devtunnels.ms/api/workspaces/${user._id}`,
+          `https://syncspace-server-jfmb.onrender.com/api/workspaces/${user._id}`,
           {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
