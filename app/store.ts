@@ -28,8 +28,6 @@ interface WorkspaceState {
     setWorkspace: (workspace: workspaceStore) => void;
 }
 
-// default value to user store and store my auth sate in localStorage.auth-storage
-//  this is a custom hook like usestate which allow us to access data without having to pass the dataas a pro[]
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
@@ -43,7 +41,7 @@ export const useAuthStore = create<AuthState>()(
       }
     }),
     {
-      name: "auth-storage", // localStorage key
+      name: "auth-storage",
     }
   )
 );
@@ -58,7 +56,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
 
     }),
     {
-      name: "workspace-storage", // localStorage key
+      name: "workspace-storage",
     }
   )
 );

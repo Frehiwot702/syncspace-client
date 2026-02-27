@@ -11,20 +11,6 @@ import Skeleton from '@/components/ui/Skeleton';
 
 const socket = io('https://syncspace-server-jfmb.onrender.com');
 
-function formatMessageTime(iso?: string): string {
-  if (!iso) return 'Just now';
-  try {
-    const d = new Date(iso);
-    const now = new Date();
-    const diffMs = now.getTime() - d.getTime();
-    if (diffMs < 60_000) return 'Just now';
-    if (diffMs < 86400_000) return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    return d.toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-  } catch {
-    return 'Just now';
-  }
-}
-
 export default function WorkspacePage() {
   const params = useParams();
   const user = useAuthStore((state) => state.user);
