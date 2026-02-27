@@ -263,7 +263,7 @@ export default function WorkspacePage() {
                         className="text-xs text-muted-foreground shrink-0"
                         title={m.createdAt ? new Date(m.createdAt).toLocaleString() : ''}
                       >
-                        {formatMessageTime(m.createdAt)}
+                        {new Date(m.createdAt || "").toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                       </span>
                     </div>
                   ))}
